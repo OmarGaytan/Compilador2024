@@ -176,6 +176,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Compilar"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="compilar1ActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

@@ -1,4 +1,4 @@
-package com.mycompany.compilador;
+package Compilador;
 import javax.swing.JFrame;
 
 public class Compilador {
@@ -12,5 +12,4 @@ public class Compilador {
             vta.setVisible(true);
         });
     } 
-    
 }

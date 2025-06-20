@@ -1,6 +1,7 @@
-package com.mycompany.compilador;
+package Compilador;
 
-import com.mycompany.compilador.Utils.TextLineNumber;
+import Compilador.Lexico.Lexer;
+import Utils.TextLineNumber;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,7 +12,6 @@ public class VentanaCompilador extends javax.swing.JPanel {
     
     public VentanaCompilador() {
         initComponents();
-
         TextLineNumber tln= new TextLineNumber(TxtCodigo);
         jScrollPane1.setRowHeaderView(tln);
     }
@@ -69,6 +69,11 @@ public class VentanaCompilador extends javax.swing.JPanel {
 
         compilar1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         compilar1.setText("Compilar");
+        compilar1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                compilar1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout CompiPanelLayout = new javax.swing.GroupLayout(CompiPanel);
         CompiPanel.setLayout(CompiPanelLayout);
@@ -146,6 +151,19 @@ public class VentanaCompilador extends javax.swing.JPanel {
             }
         }
     }//GEN-LAST:event_CargarCodigoActionPerformed
+
+    private void compilar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_compilar1ActionPerformed
+        Lexer lexer = null;
+        try {
+            lexer = new Lexer();
+        } catch (IOException ex) {
+            System.getLogger(VentanaCompilador.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        Lexer.ResultadoLexico resultado = lexer.analizar(TxtCodigo.getText()+ "\n");
+
+        TxtTokens.setText(String.join("\n", resultado.tokens));
+        TxtErrores.setText(String.join("\n", resultado.errores));
+    }//GEN-LAST:event_compilar1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

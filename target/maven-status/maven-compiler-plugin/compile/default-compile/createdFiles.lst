@@ -1,5 +1,10 @@
-com\mycompany\compilador\VentanaCompilador$1.class
-com\mycompany\compilador\Utils\TextLineNumber$1.class
-com\mycompany\compilador\VentanaCompilador.class
-com\mycompany\compilador\Utils\TextLineNumber.class
-com\mycompany\compilador\Compilador.class
+Compilador\Lexico\Lexer.class
+Compilador\VentanaCompilador.class
+Utils\POI$1.class
+Utils\TextLineNumber.class
+Compilador\VentanaCompilador$1.class
+Compilador\VentanaCompilador$2.class
+Utils\TextLineNumber$1.class
+Compilador\Compilador.class
+Compilador\Lexico\Lexer$ResultadoLexico.class
+Utils\POI.class

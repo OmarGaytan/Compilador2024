@@ -1,4 +1,4 @@
-package com.mycompany.compilador.Utils;
+package Utils;
 import java.awt.*;
 import java.beans.*;
 import java.util.HashMap;
