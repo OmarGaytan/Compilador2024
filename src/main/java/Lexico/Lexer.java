@@ -1,4 +1,4 @@
-package Compilador.Lexico;
+package Lexico;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,15 +18,17 @@ public class Lexer {
     public static class ResultadoLexico {
         public List<String> tokens = new ArrayList<>();
         public List<String> errores = new ArrayList<>();
+        public List<String> tokensParaParser = new ArrayList<>();
     }
 
     // Aquí va tu matriz léxica [estado][columna]
     private int[][] matrizLexica;
     String arrReservadas[]= {"if", "else", "switch", "for", "do", "while", "console.log", "forEach",
-        "break", "continue", "let", "const", "undefined", "interface", "typeof", "Number", "String",
+        "break", "continue", "let", "const", "undefined", "interface", "typeof", "number", "string",
         "any", "interface", "set", "get", "class", "toLowerCase", "toUpperCase", "length", "trim",
         "charAt", "startsWith", "endsWith", "indexOf", "Includes", "slice", "replace", "split", "push",
-        "shift", "in", "of", "splice", "concat", "find", "findIndex", "filter", "map", "sort", "reverse"};
+        "shift", "in", "of", "splice", "concat", "find", "findIndex", "filter", "map", "sort", "reverse",
+        "function", "Method", "return", "val", "var"};
 
     public Lexer() throws IOException {
         cargarMatrizDesdeExcel();
@@ -60,10 +62,10 @@ public ResultadoLexico analizar(String codigoFuente) {
         
         //Si el estado es error
         if (siguienteEstado >= 500) {
-            System.out.println("-------------------------------------------------");
-            System.out.println("Error en lexico con estado: " + siguienteEstado);
-            System.out.println("El lexema era: " + lexema);
-            System.out.println("-------------------------------------------------");
+            //System.out.println("-------------------------------------------------");
+            //System.out.println("Error en lexico con estado: " + siguienteEstado);
+            //System.out.println("El lexema era: " + lexema);
+            //System.out.println("-------------------------------------------------");
             resultado.errores.add("Error léxico en: '" + lexema.toString() + actual + "'");
             lexema.setLength(0);
             estado = 0;
@@ -72,20 +74,43 @@ public ResultadoLexico analizar(String codigoFuente) {
         } else if (siguienteEstado < 0) {
             
             String token = lexema.toString();
+            String tipoToken = tokenNombre(siguienteEstado);
 
             if (Arrays.asList(arrReservadas).contains(token)) {
-                System.out.println("-------------------------------------------------");
-                System.out.println("Lexema hasta el momento: " + lexema);
-                System.out.println("Estado: Manualmente");
-                System.out.println("-------------------------------------------------");
+                //System.out.println("-------------------------------------------------");
+                //System.out.println("Lexema hasta el momento: " + lexema);
+                tipoToken = tokenNombre(-59);
+                //System.out.println("Estado: -59");
+                //System.out.println("-------------------------------------------------");
                 resultado.tokens.add("PALABRA RESERVADA: " + token);
             } else {
-                System.out.println("-------------------------------------------------");
-                System.out.println("Se tokenizo: " + lexema);
-                System.out.println("Estado: " + siguienteEstado);
-                System.out.println("-------------------------------------------------");
+                //System.out.println("-------------------------------------------------");
+                //System.out.println("Se tokenizo: " + lexema);
+                //System.out.println("Estado: " + siguienteEstado);
+                //System.out.println("-------------------------------------------------");
                 resultado.tokens.add("TOKEN " + tokenNombre(siguienteEstado) + ": " + token);
             }
+            
+            switch (tipoToken) {
+                case "ID" -> resultado.tokensParaParser.add("id");
+                case "NUM" -> resultado.tokensParaParser.add("numerica");
+                case "REAL" -> resultado.tokensParaParser.add("real");
+                case "CADENA" -> resultado.tokensParaParser.add("string");
+                case "BOOL" -> resultado.tokensParaParser.add(lexema.toString().toLowerCase()); // true / false
+                case "NULL" -> resultado.tokensParaParser.add("null");
+                case "EXP" -> resultado.tokensParaParser.add("exp");
+
+                // Operadores y símbolos tal cual se usan
+                case "LOG", "LOG_BIN", "CONTROL", "ASIG", "ARIT", "POSTFIX", "REL", "TERNARIO", "AGRUP", "TURNO", "CONV" ->
+                    resultado.tokensParaParser.add(lexema.toString());
+
+                case "COMENTARIO_LINEA", "COMENTARIO_BLOQUE" -> {
+                    // ignorar completamente
+            }
+
+            default -> resultado.tokensParaParser.add("DESCONOCIDO");
+                    }
+
             lexema.append(actual);
             lexema.setLength(0);
             estado = 0;
@@ -93,19 +118,41 @@ public ResultadoLexico analizar(String codigoFuente) {
         } else {
             lexema.append(actual);
             estado = siguienteEstado;
-            System.out.println("-------------------------------------------------");
-            System.out.println("Lexema hasta el momento: " + lexema);
-            System.out.println("Estado: " + siguienteEstado);
-            System.out.println("-------------------------------------------------");
+            //System.out.println("-------------------------------------------------");
+            //System.out.println("Lexema hasta el momento: " + lexema);
+            //System.out.println("Estado: " + siguienteEstado);
+            //System.out.println("-------------------------------------------------");
             puntero++;
         }
     }
 
     // Capturar cualquier token pendiente al final
     if (lexema.length() > 0 && estado < 0) {
+        String token = tokenNombre(estado);
         resultado.tokens.add("TOKEN " + tokenNombre(estado) + ": " + lexema);
+        
+        switch (token) {
+                case "ID" -> resultado.tokensParaParser.add("ID");
+                case "NUM" -> resultado.tokensParaParser.add("NUM");
+                case "REAL" -> resultado.tokensParaParser.add("REAL");
+                case "CADENA" -> resultado.tokensParaParser.add("CADENA");
+                case "LOG", "LOG_BIN" -> resultado.tokensParaParser.add(lexema.toString()); // ej: &&, !
+                case "CONTROL" -> resultado.tokensParaParser.add(lexema.toString());        // ej: if, while
+                case "ASIG" -> resultado.tokensParaParser.add(lexema.toString());           // ej: =, +=
+                case "ARIT" -> resultado.tokensParaParser.add(lexema.toString());           // ej: +, -
+                case "POSTFIX" -> resultado.tokensParaParser.add(lexema.toString());        // ej: ++, --
+                case "REL" -> resultado.tokensParaParser.add(lexema.toString());            // ej: >, ==
+                case "EXP" -> resultado.tokensParaParser.add("^");
+                case "TERNARIO" -> resultado.tokensParaParser.add(lexema.toString());       // ej: ? :
+                case "AGRUP" -> resultado.tokensParaParser.add(lexema.toString());          // ej: (, {, ]
+                case "TURNO" -> resultado.tokensParaParser.add(lexema.toString());          // ej: >>
+                case "CONV" -> resultado.tokensParaParser.add(lexema.toString());           // ej: !==, ===
+                case "COMENTARIO_LINEA", "COMENTARIO_BLOQUE" -> {
+                    // Ignoramos comentarios completamente
+                }
+                default -> resultado.tokensParaParser.add("DESCONOCIDO");
+            }
     }
-
     return resultado;
 }
 
@@ -132,7 +179,7 @@ public ResultadoLexico analizar(String codigoFuente) {
                 try {
                     valor = Integer.parseInt(texto);
                 } catch (NumberFormatException e) {
-                    System.err.println("Valor inválido en fila " + i + ", columna " + j + ": '" + texto + "'");
+                    //System.err.println("Valor inválido en fila " + i + ", columna " + j + ": '" + texto + "'");
                 }
 
                 matrizLexica[i - 1][j - 1] = valor;
@@ -190,31 +237,27 @@ public ResultadoLexico analizar(String codigoFuente) {
 }
 
     private String tokenNombre(int estadoFinal) {
-        // Devuelve el nombre del token según el estado final (e.g., -57 → TK_ID)
-        return switch (estadoFinal) {
-        case -1, -2 -> "TK_ARIT";
-        case -3, -4, -5, -6 -> "TK_LOG_BIN";
-        case -7, -8, -9, -10 -> "TK_CONTROL";
-        case -11, -12, -13 -> "TK_ARIT";
-        case -14, -15, -44, -49, -50, -53 -> "TK_REL";
-        case -16, -29, -31, -34, -35, -37, -39, -41, -42, -45, -47, -52 -> "TK_ASIG";
-        case -17, -32, -33 -> "TK_LOG";
-        case -18 -> "TK_TERNARIO";
-        case -19, -20, -21, -22, -23, -24 -> "TK_AGRUP";
-        case -25, -26 -> "TK_CADENA";
-        case -27 -> "TK_NUM";
-        case -28, -30 -> "TK_POSTFIX";
-        case -36 -> "TK_EXP";
-        case -38 -> "TK_COMENTARIO_BLOQUE";
-        case -40 -> "TK_COMENTARIO_LINEA";
-        case -43, -46, -48 -> "TK_TURNO";
-        case -51, -54 -> "TK_CONV";
-        case -55, -56 -> "TK_REAL";
-        case -57 -> "TK_ID";
-        case -58, -59 -> "TK_BOOL";
-        case -60 -> "TK_NULL";
-        case -61 -> "TK_RESERVADA";
+    return switch (estadoFinal) {
+        case -1 -> "ID";
+        case -2 -> "NUM";
+        case -3 -> "REAL";
+        case -4 -> "EXP";
+        case -5 -> "COMENTARIO_LINEA";
+        case -6, -13, -16, -22, -24, -31, -33, -35, -40, -42, -47, -48 -> "ASIG";
+        case -7 -> "COMENTARIO_BLOQUE";
+        case -8, -12, -15, -29, -32 -> "ARIT";
+        case -9, -10 -> "CADENA";
+        case -11, -14 -> "POSTFIX";
+        case -17, -18, -20, -23 -> "LOG_BIN";
+        case -19, -21, -51 -> "LOG";
+        case -25, -26, -27, -28, -59 -> "CONTROL";
+        case -30 -> "EXP";
+        case -34, -41 -> "TURNO";
+        case -36, -37, -38, -39, -43, -44, -45, -49 -> "REL";
+        case -46, -50 -> "CONV";
+        case -52 -> "TERNARIO";
+        case -53, -54, -55, -56, -57, -58 -> "AGRUP";
         default -> "TOKEN_DESCONOCIDO (" + estadoFinal + ")";
     };
-    }
+}
 }

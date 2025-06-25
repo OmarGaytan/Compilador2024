@@ -1,5 +1,7 @@
 E:\Documents\CompiladorAna\Compilador2024\src\main\java\Compilador\Compilador.java
-E:\Documents\CompiladorAna\Compilador2024\src\main\java\Compilador\Lexico\Lexer.java
 E:\Documents\CompiladorAna\Compilador2024\src\main\java\Compilador\VentanaCompilador.java
+E:\Documents\CompiladorAna\Compilador2024\src\main\java\Lexico\Lexer.java
+E:\Documents\CompiladorAna\Compilador2024\src\main\java\Sintaxis\Sintaxis.java
+E:\Documents\CompiladorAna\Compilador2024\src\main\java\Sintaxis\SintaxisLoader.java
 E:\Documents\CompiladorAna\Compilador2024\src\main\java\Utils\POI.java
 E:\Documents\CompiladorAna\Compilador2024\src\main\java\Utils\TextLineNumber.java

@@ -1,6 +1,8 @@
 package Compilador;
 
-import Compilador.Lexico.Lexer;
+import Lexico.Lexer;
+import Sintaxis.Sintaxis;
+import Sintaxis.SintaxisLoader;
 import Utils.TextLineNumber;
 import java.io.File;
 import java.io.IOException;
@@ -163,6 +165,19 @@ public class VentanaCompilador extends javax.swing.JPanel {
 
         TxtTokens.setText(String.join("\n", resultado.tokens));
         TxtErrores.setText(String.join("\n", resultado.errores));
+        
+        SintaxisLoader.ResultadoSintaxis datos = null;
+        try {
+            datos = SintaxisLoader.cargarDesdeExcel("src/main/java/resources/Matriz_Sintaxis.xlsx");
+        } catch (IOException ex) {
+            System.getLogger(VentanaCompilador.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+
+        Sintaxis parser = new Sintaxis(datos.producciones, datos.matrizSintactica);
+        //SintaxisLoader.imprimirMatrizSintactica(datos.matrizSintactica);
+        parser.trazarAnalisis(resultado.tokensParaParser);
+
+        //Sintaxis.ResultadoSintactico resultadoSintactico = parser.analizar(resultado.tokensParaParser);
     }//GEN-LAST:event_compilar1ActionPerformed
 
 
