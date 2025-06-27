@@ -19,16 +19,16 @@ public class Lexer {
         public List<String> tokens = new ArrayList<>();
         public List<String> errores = new ArrayList<>();
         public List<String> tokensParaParser = new ArrayList<>();
+        public List<String> lexemas = new ArrayList<>();
     }
 
-    // Aquí va tu matriz léxica [estado][columna]
     private int[][] matrizLexica;
     String arrReservadas[]= {"if", "else", "switch", "for", "do", "while", "console.log", "forEach",
         "break", "continue", "let", "const", "undefined", "interface", "typeof", "number", "string",
         "any", "interface", "set", "get", "class", "toLowerCase", "toUpperCase", "length", "trim",
         "charAt", "startsWith", "endsWith", "indexOf", "Includes", "slice", "replace", "split", "push",
         "shift", "in", "of", "splice", "concat", "find", "findIndex", "filter", "map", "sort", "reverse",
-        "function", "Method", "return", "val", "var"};
+        "function", "Method", "return", "val", "var", "new", "Array"};
 
     public Lexer() throws IOException {
         cargarMatrizDesdeExcel();
@@ -44,7 +44,7 @@ public ResultadoLexico analizar(String codigoFuente) {
         char actual = codigoFuente.charAt(puntero);
         
         //Ignorar esoacios y tabs en estado 0
-        if ((actual == ' ' || actual == '\t' || actual == '\n') && estado == 0) {
+        if ((actual == ' ' || actual == '\t' || actual == '\n' || actual == '\r') && estado == 0) {
             puntero++;
             continue;
         }
@@ -105,12 +105,13 @@ public ResultadoLexico analizar(String codigoFuente) {
                     resultado.tokensParaParser.add(lexema.toString());
 
                 case "COMENTARIO_LINEA", "COMENTARIO_BLOQUE" -> {
-                    // ignorar completamente
+                    
             }
 
             default -> resultado.tokensParaParser.add("DESCONOCIDO");
-                    }
-
+            }
+            
+            resultado.lexemas.add(lexema.toString());
             lexema.append(actual);
             lexema.setLength(0);
             estado = 0;
@@ -126,31 +127,28 @@ public ResultadoLexico analizar(String codigoFuente) {
         }
     }
 
-    // Capturar cualquier token pendiente al final
     if (lexema.length() > 0 && estado < 0) {
         String token = tokenNombre(estado);
         resultado.tokens.add("TOKEN " + tokenNombre(estado) + ": " + lexema);
         
         switch (token) {
-                case "ID" -> resultado.tokensParaParser.add("ID");
-                case "NUM" -> resultado.tokensParaParser.add("NUM");
-                case "REAL" -> resultado.tokensParaParser.add("REAL");
-                case "CADENA" -> resultado.tokensParaParser.add("CADENA");
-                case "LOG", "LOG_BIN" -> resultado.tokensParaParser.add(lexema.toString()); // ej: &&, !
-                case "CONTROL" -> resultado.tokensParaParser.add(lexema.toString());        // ej: if, while
-                case "ASIG" -> resultado.tokensParaParser.add(lexema.toString());           // ej: =, +=
-                case "ARIT" -> resultado.tokensParaParser.add(lexema.toString());           // ej: +, -
-                case "POSTFIX" -> resultado.tokensParaParser.add(lexema.toString());        // ej: ++, --
-                case "REL" -> resultado.tokensParaParser.add(lexema.toString());            // ej: >, ==
-                case "EXP" -> resultado.tokensParaParser.add("^");
-                case "TERNARIO" -> resultado.tokensParaParser.add(lexema.toString());       // ej: ? :
-                case "AGRUP" -> resultado.tokensParaParser.add(lexema.toString());          // ej: (, {, ]
-                case "TURNO" -> resultado.tokensParaParser.add(lexema.toString());          // ej: >>
-                case "CONV" -> resultado.tokensParaParser.add(lexema.toString());           // ej: !==, ===
+                case "ID" -> resultado.tokensParaParser.add("id");
+                case "NUM" -> resultado.tokensParaParser.add("numerica");
+                case "REAL" -> resultado.tokensParaParser.add("real");
+                case "CADENA" -> resultado.tokensParaParser.add("string");
+                case "BOOL" -> resultado.tokensParaParser.add(lexema.toString().toLowerCase()); // true / false
+                case "NULL" -> resultado.tokensParaParser.add("null");
+                case "EXP" -> resultado.tokensParaParser.add("exp");
+
+                // Operadores y símbolos tal cual se usan
+                case "LOG", "LOG_BIN", "CONTROL", "ASIG", "ARIT", "POSTFIX", "REL", "TERNARIO", "AGRUP", "TURNO", "CONV" ->
+                    resultado.tokensParaParser.add(lexema.toString());
+
                 case "COMENTARIO_LINEA", "COMENTARIO_BLOQUE" -> {
-                    // Ignoramos comentarios completamente
-                }
-                default -> resultado.tokensParaParser.add("DESCONOCIDO");
+                    
+            }
+
+            default -> resultado.tokensParaParser.add("DESCONOCIDO");
             }
     }
     return resultado;
@@ -164,7 +162,7 @@ public ResultadoLexico analizar(String codigoFuente) {
 
         Sheet hoja = workbook.getSheetAt(0);
         int totalFilas = 70;
-        int columnas = 34; // ← número fijo de columnas útiles
+        int columnas = 34;
 
         matrizLexica = new int[totalFilas - 1][columnas];
         DataFormatter formatter = new DataFormatter();
@@ -228,8 +226,8 @@ public ResultadoLexico analizar(String codigoFuente) {
     if (c == ']') return 27;
     if (c == '(') return 28;
     if (c == ')') return 29;
-    if (c == ' ') return 30;           // OC (espacio)
-    if (c == '\n') return 31;          // salto de línea
+    if (c == ' ') return 30;          
+    if (c == '\n') return 31;   
     if (c == '"') return 32;
     if (c == '\'') return 33;
 

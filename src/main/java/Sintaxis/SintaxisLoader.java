@@ -19,10 +19,8 @@ public class SintaxisLoader {
         try (FileInputStream fis = new FileInputStream(new File(ruta));
              Workbook wb = new XSSFWorkbook(fis)) {
 
-            // ==========================
-            // Hoja 2: Producciones
-            // ==========================
-            Sheet hojaProducciones = wb.getSheetAt(1); // segunda hoja
+            //Producciones
+            Sheet hojaProducciones = wb.getSheetAt(1);
             for (int i = 0; i <= hojaProducciones.getLastRowNum(); i++) {
                 Row fila = hojaProducciones.getRow(i);
                 if (fila == null || fila.getCell(0) == null) continue;
@@ -39,10 +37,9 @@ public class SintaxisLoader {
                 }
             }
 
-            // ==========================
-            // Hoja 1: Matriz sintáctica
-            // ==========================
-            Sheet hojaMatriz = wb.getSheetAt(0); // primera hoja
+
+            //Matriz sintáctica
+            Sheet hojaMatriz = wb.getSheetAt(0);
             Row encabezados = hojaMatriz.getRow(0);
             List<String> terminales = new ArrayList<>();
             for (int j = 2; j < encabezados.getLastCellNum(); j++) {

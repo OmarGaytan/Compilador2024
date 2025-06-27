@@ -8,6 +8,7 @@ public class Compilador {
             vta.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             vta.setContentPane(new VentanaCompilador());
             vta.pack();
+            vta.setResizable(false);
             vta.setLocationRelativeTo(null);
             vta.setVisible(true);
         });
