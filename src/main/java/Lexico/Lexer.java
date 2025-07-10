@@ -25,10 +25,13 @@ public class Lexer {
     private int[][] matrizLexica;
     String arrReservadas[]= {"if", "else", "switch", "for", "do", "while", "console.log", "forEach",
         "break", "continue", "let", "const", "undefined", "interface", "typeof", "number", "string",
-        "any", "interface", "set", "get", "class", "toLowerCase", "toUpperCase", "length", "trim",
+        "any", "set", "get", "class", "toLowerCase", "toUpperCase", "length", "trim",
         "charAt", "startsWith", "endsWith", "indexOf", "Includes", "slice", "replace", "split", "push",
         "shift", "in", "of", "splice", "concat", "find", "findIndex", "filter", "map", "sort", "reverse",
-        "function", "Method", "return", "val", "var", "new", "Array"};
+        "function", "Method", "return", "val", "var", "new", "Array", "boolean", "real", "exp", "null",
+        "elseif", "toLowerCase", "toUpperCase", "legth", "trim", "charAt", "startsWith", "endsWith",
+        "indexOf", "includes", "slice", "replace", "split", "expo", "sqrtv", "fromCharCode", "asc", "sen",
+        "val", "cos", "tan"};
 
     public Lexer() throws IOException {
         cargarMatrizDesdeExcel();
@@ -42,6 +45,24 @@ public ResultadoLexico analizar(String codigoFuente) {
 
     while (puntero < codigoFuente.length()) {
         char actual = codigoFuente.charAt(puntero);
+        
+        if (codigoFuente.startsWith("Console.log", puntero)) {
+            resultado.tokens.add("PALABRA RESERVADA: Console.log");
+            resultado.tokensParaParser.add("Console.log");
+            resultado.lexemas.add("Console.log");
+
+            puntero += "Console.log".length();
+            continue;
+        }
+
+        if (codigoFuente.startsWith("Console.read", puntero)) {
+            resultado.tokens.add("PALABRA RESERVADA: Console.read");
+            resultado.tokensParaParser.add("Console.read");
+            resultado.lexemas.add("Console.read");
+
+            puntero += "Console.read".length();
+            continue;
+        }
         
         //Ignorar esoacios y tabs en estado 0
         if ((actual == ' ' || actual == '\t' || actual == '\n' || actual == '\r') && estado == 0) {
@@ -95,7 +116,7 @@ public ResultadoLexico analizar(String codigoFuente) {
                 case "ID" -> resultado.tokensParaParser.add("id");
                 case "NUM" -> resultado.tokensParaParser.add("numerica");
                 case "REAL" -> resultado.tokensParaParser.add("real");
-                case "CADENA" -> resultado.tokensParaParser.add("string");
+                case "CADENA" -> resultado.tokensParaParser.add("cadena");
                 case "BOOL" -> resultado.tokensParaParser.add(lexema.toString().toLowerCase()); // true / false
                 case "NULL" -> resultado.tokensParaParser.add("null");
                 case "EXP" -> resultado.tokensParaParser.add("exp");
@@ -135,7 +156,7 @@ public ResultadoLexico analizar(String codigoFuente) {
                 case "ID" -> resultado.tokensParaParser.add("id");
                 case "NUM" -> resultado.tokensParaParser.add("numerica");
                 case "REAL" -> resultado.tokensParaParser.add("real");
-                case "CADENA" -> resultado.tokensParaParser.add("string");
+                case "CADENA" -> resultado.tokensParaParser.add("cadena");
                 case "BOOL" -> resultado.tokensParaParser.add(lexema.toString().toLowerCase()); // true / false
                 case "NULL" -> resultado.tokensParaParser.add("null");
                 case "EXP" -> resultado.tokensParaParser.add("exp");

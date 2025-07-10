@@ -20,7 +20,9 @@ public class DBManager {
                 tamanio_arreglo INTEGER,
                 dimencion_arr INTEGER,
                 num_parametros INTEGER,
-                TParr TEXT
+                TParr TEXT,
+                UNIQUE(id, ambito)
+                       
             );
         """;
 
@@ -34,10 +36,9 @@ public class DBManager {
         }
     }
     
-    public static void insertarVar(String id, String tipo, String clase, int ambito) {
+    public static void insertarVar(String id, String tipo, String clase, int ambito) throws SQLException {
         String sql= "INSERT INTO simbolos (id, tipo, clase, ambito) VALUES (?, ?, ?, ?)";
-        
-        try {
+
             Connection conn = DriverManager.getConnection("jdbc:sqlite:tabla_simbolos.db");
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id);
@@ -46,16 +47,12 @@ public class DBManager {
             pstmt.setInt(4, ambito);
             
             pstmt.executeUpdate();
-            
-        } catch(SQLException e) {
-            System.out.println("Error al insertar variable: " + e.getMessage());
-        }
+
     }
     
-    public static void insertarArr(String id, String tipo, String clase, int ambito, int tamArr) {
+    public static void insertarArr(String id, String tipo, String clase, int ambito, int tamArr) throws SQLException {
         String sql= "INSERT INTO simbolos (id, tipo, clase, ambito, tamanio_arreglo) VALUES (?, ?, ?, ?, ?)";
-        
-        try {
+
             Connection conn = DriverManager.getConnection("jdbc:sqlite:tabla_simbolos.db");
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id);
@@ -65,16 +62,12 @@ public class DBManager {
             pstmt.setInt(5, tamArr);
             
             pstmt.executeUpdate();
-            
-        } catch(SQLException e) {
-            System.out.println("Error al insertar arreglo: " + e.getMessage());
-        }
+
     }
     
-    public static void insertarMet(String id, String tipo, String clase, int ambito) {
+    public static void insertarMet(String id, String tipo, String clase, int ambito) throws SQLException {
         String sql= "INSERT INTO simbolos (id, tipo, clase, ambito, tamanio_arreglo) VALUES (?, ?, ?, ?, ?)";
         
-        try {
             Connection conn = DriverManager.getConnection("jdbc:sqlite:tabla_simbolos.db");
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id);
@@ -82,17 +75,12 @@ public class DBManager {
             pstmt.setString(3, clase);
             pstmt.setInt(4, ambito);
             
-            pstmt.executeUpdate();
-            
-        } catch(SQLException e) {
-            System.out.println("Error al insertar metodo: " + e.getMessage());
-        }
+            pstmt.executeUpdate();       
     }
     
-    public static void insertarPar(String id, String tipo, String clase, int ambito, String TParr) {
+    public static void insertarPar(String id, String tipo, String clase, int ambito, String TParr) throws SQLException {
         String sql= "INSERT INTO simbolos (id, tipo, clase, ambito, TParr) VALUES (?, ?, ?, ?, ?)";
-        
-        try {
+
             Connection conn = DriverManager.getConnection("jdbc:sqlite:tabla_simbolos.db");
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id);
@@ -102,10 +90,17 @@ public class DBManager {
             pstmt.setString(5, TParr);
             
             pstmt.executeUpdate();
-            
-        } catch(SQLException e) {
-            System.out.println("Error al insertar parametros: " + e.getMessage());
-        }
     }
-   
+    
+    public static void insertarInfaAndClass(String id, String clase, int ambito) throws SQLException {
+        String sql= "INSERT INTO simbolos (id, clase, ambito) VALUES (?, ?, ?)";
+
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:tabla_simbolos.db");
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, id);
+            pstmt.setString(2, clase);
+            pstmt.setInt(3, ambito);
+            
+            pstmt.executeUpdate();
+    }
 }

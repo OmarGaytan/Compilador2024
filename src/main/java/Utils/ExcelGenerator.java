@@ -27,22 +27,20 @@ public class ExcelGenerator {
         int totalTipos = 0, totalErrores = 0, numbers= 0, strings= 0, booleans= 0, reales= 0, exp= 0, nulls= 0,
                 ids= 0, errNoDec= 0;
 
-        for (int ambito : Ambito.conteoPorAmbito.keySet()) {
+        for (int ambito : Ambito.obtenerTodosLosAmbitos()) {
             Row fila = sheet.createRow(filaNum++);
-            Map<String, Integer> tipos = Ambito.conteoPorAmbito.get(ambito);
+            Map<String, Integer> tipos = Ambito.conteoPorAmbito.getOrDefault(ambito, new java.util.HashMap<>());
 
             fila.createCell(0).setCellValue(ambito);
 
             int subtotal = 0;
 
-            // Acumuladores generales por tipo
             for (int i = 1; i <= 7; i++) {
                 String tipo = columnas[i];
                 int count = tipos.getOrDefault(tipo, 0);
                 fila.createCell(i).setCellValue(count);
                 subtotal += count;
 
-                // Acumulamos también para totales generales
                 switch (tipo) {
                     case "number" -> numbers += count;
                     case "string" -> strings += count;
@@ -62,15 +60,10 @@ public class ExcelGenerator {
             fila.createCell(10).setCellValue(subtotal);
             fila.createCell(11).setCellValue(errDup + errUnd);
             
-            
-
-            // Acumuladores generales de totales
             totalTipos += subtotal;
             totalErrores += errDup + errUnd;
         }
         
-
-        // Fila total general
         Row total = sheet.createRow(filaNum);
         total.createCell(0).setCellValue("Total general:");
         total.createCell(1).setCellValue(numbers);
@@ -80,9 +73,13 @@ public class ExcelGenerator {
         total.createCell(5).setCellValue(exp);
         total.createCell(6).setCellValue(nulls);
         total.createCell(7).setCellValue(ids);
-        total.createCell(13).setCellValue("**MAESTRO, SIGO IMPLEMENTADO, ESTA ES UNA MUESTRA DE MI PROGRESO HASTA AHORA PARA SU RETRO Y TENER DERECHO A 2DA OPORTUNIDAD, GRACIAS**");
+        total.createCell(8).setCellValue(
+        Ambito.erroresDuplicados.values().stream().mapToInt(Integer::intValue).sum());
+        total.createCell(9).setCellValue(
+        Ambito.erroresNoDeclarados.values().stream().mapToInt(Integer::intValue).sum());
+        total.createCell(10).setCellValue(totalTipos);
+        total.createCell(11).setCellValue(totalErrores);
         
-              
 
         try (FileOutputStream fileOut = new FileOutputStream(ruta)) {
             workbook.write(fileOut);

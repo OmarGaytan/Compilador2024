@@ -79,7 +79,6 @@ public class VentanaCompilador extends javax.swing.JPanel {
 
         CargarCodigo1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         CargarCodigo1.setText("Tabla de ambito");
-        CargarCodigo1.setActionCommand("Tabla de ambito");
         CargarCodigo1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mostrarTablaAmbito(evt);
@@ -90,7 +89,7 @@ public class VentanaCompilador extends javax.swing.JPanel {
         exportarExcel.setText("Generar Excel");
         exportarExcel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exportarExcelmostrarTablaSimbolos(evt);
+                exportarExcel(evt);
             }
         });
 
@@ -206,6 +205,7 @@ public class VentanaCompilador extends javax.swing.JPanel {
         //SintaxisLoader.imprimirMatrizSintactica(datos.matrizSintactica);
         parser.trazarAnalisis(resultado.tokensParaParser, resultado.lexemas);
         
+        
         if(!parser.errores.isEmpty()) {
             for (String error : parser.errores) {
                 TxtErrores.append(error + "\n");
@@ -220,9 +220,9 @@ public class VentanaCompilador extends javax.swing.JPanel {
         ventana.setVisible(true);
     }//GEN-LAST:event_mostrarTablaAmbito
 
-    private void exportarExcelmostrarTablaSimbolos(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportarExcelmostrarTablaSimbolos
+    private void exportarExcel(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportarExcel
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setSelectedFile(new File("Ana Luisa Gaytan Estrella.xlsx"));
+        fileChooser.setSelectedFile(new File("Ana Luisa Gaytan Estrella-18130217.xlsx"));
         int opcion = fileChooser.showSaveDialog(null);
         if (opcion == JFileChooser.APPROVE_OPTION) {
             File archivo = fileChooser.getSelectedFile();
@@ -233,7 +233,7 @@ public class VentanaCompilador extends javax.swing.JPanel {
                 System.getLogger(VentanaCompilador.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
             }
         }
-    }//GEN-LAST:event_exportarExcelmostrarTablaSimbolos
+    }//GEN-LAST:event_exportarExcel
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
